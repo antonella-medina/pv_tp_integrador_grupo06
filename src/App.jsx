@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useContext } from "react";
 import { AdminProvider, AdminContext } from "./context/AdminContext";
-
+import { ThemeProvider } from '@mui/material/styles'; 
+import { theme } from './theme'; 
 {/*importamos todas nlas pantallas*/}
 import Login from "./views/Login";
 import Dashboard from "./views/Dashboard";
@@ -41,12 +42,11 @@ function RutasDeLaApp() {
           path="/clientes" 
           element={
             <RutaProtegida>
-              <div style={{ padding: "20px" }}>Acá va el código de la Persona 2</div>
+              <div style={{ padding: "20px" }}>Persona 2</div>
             </RutaProtegida>
           } 
         />
 
-        {/* Si el usuario escribe cualquier verdura en la URL, lo manda al login */}
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </BrowserRouter>
@@ -54,11 +54,14 @@ function RutasDeLaApp() {
 }
 
 function App() {
-    {/*AdminProvider abraza a toda la aplicación para que todos escuchen el Contexto*/}
+
   return (
     <AdminProvider>
-      <RutasDeLaApp />
+      <ThemeProvider theme={theme}> 
+        <RutasDeLaApp />
+      </ThemeProvider>
     </AdminProvider>
+
   );
 }
 
