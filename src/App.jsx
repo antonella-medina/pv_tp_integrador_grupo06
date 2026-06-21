@@ -7,6 +7,7 @@ import { theme } from './theme';
 import Login from "./views/Login";
 import Dashboard from "./views/Dashboard";
 import Header from "./components/layout/Header";
+import ListaClientes from "./views/ListaClientes";
 
 {/*este componente envuelve a las páginas privadas.Si no estás logueado, te manda una patada al /login.*/}
 const RutaProtegida = ({ children }) => {
@@ -37,7 +38,15 @@ function RutasDeLaApp() {
             </RutaProtegida>
           } 
         />
-        
+        <Route 
+          path="/clientes" 
+          element={
+            <RutaProtegida>
+              <ListaClientes />
+            </RutaProtegida>
+          } 
+        />
+        {/*
         <Route 
           path="/clientes" 
           element={
@@ -46,13 +55,12 @@ function RutasDeLaApp() {
             </RutaProtegida>
           } 
         />
-
+          */}
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </BrowserRouter>
   );
 }
-
 function App() {
 
   return (
