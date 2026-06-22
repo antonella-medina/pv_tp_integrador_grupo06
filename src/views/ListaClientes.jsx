@@ -4,6 +4,8 @@ import {
   TableBody, TextField, CircularProgress, Skeleton, Alert, Box,
   Button, Snackbar
 } from '@mui/material';
+// Se Importo el nuevo componente modular del formulario modal
+import FormularioCliente from '../components/clientes/FormularioCliente';
 
 function ListaClientes() {
   const [clientes, setClientes] = useState([]);
@@ -11,15 +13,11 @@ function ListaClientes() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: '' });
-  const [nuevoCliente, setNuevoCliente] = useState({
-    firstname: '',
-    lastname: '',
-    email: '',
-    phone: '',
-    city: ''
-  });
+  
+  // Estado para controlar la apertura de la ventana emergente
+  const [openModal, setOpenModal] = useState(false);
 
-  // GET de usuarios
+  // GET de usuarios remoto
   useEffect(() => {
     const fetchClientes = async () => {
       try {
@@ -36,53 +34,41 @@ function ListaClientes() {
     fetchClientes();
   }, []);
 
-  // Filtrar por apellido o ciudad (con protección)
+  // Filtrar por apellido o ciudad (con protección de nulos)
   const clientesFiltrados = clientes.filter(c =>
     (c.name?.lastname?.toLowerCase() || '').includes(busqueda.toLowerCase()) ||
     (c.address?.city?.toLowerCase() || '').includes(busqueda.toLowerCase())
   );
 
-  // POST nuevo cliente
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await fetch('https://fakestoreapi.com/users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: nuevoCliente.email,
-          username: nuevoCliente.firstname.toLowerCase(),
-          password: '1234',
-          name: {
-            firstname: nuevoCliente.firstname,
-            lastname: nuevoCliente.lastname
-          },
-          address: {
-            city: nuevoCliente.city,
-            street: 'default',
-            number: 0,
-            zipcode: '0000',
-            geolocation: { lat: '0', long: '0' }
-          },
-          phone: nuevoCliente.phone
-        })
-      });
-      if (!res.ok) throw new Error('Error al crear cliente');
-      const data = await res.json();
-      console.log("Nuevo cliente:", data);
-      setClientes([...clientes, data]); // refrescar lista
-      setSnackbar({ open: true, message: `Cliente agregado con ID ${data.id}` });
-      setNuevoCliente({ firstname: '', lastname: '', email: '', phone: '', city: '' });
-    } catch (err) {
-      setError(err.message);
-    }
+  // Callback para insertar el nuevo cliente creado en la tabla inmediatamente
+  const handleAgregarClienteALista = (nuevoClienteData) => {
+    setClientes([...clientes, nuevoClienteData]);
+  };
+
+  // Manejador de feedback visual para disparar el Snackbar desde el hijo
+  const desencadenarSnackbar = (mensaje) => {
+    setSnackbar({ open: true, message: mensaje });
   };
 
   return (
     <Container>
-      <Typography variant="h4" gutterBottom>
-        Tabla de Clientes
-      </Typography>
+      {/* Encabezado limpio y alineado */}
+      <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mt: 4, mb: 2 }}>
+        <Typography variant="h4" style={{ fontWeight: 'bold' }}>
+          Tabla de Clientes
+        </Typography>
+        
+        {/* Botón que dispara la apertura del formulario modular */}
+        <Button 
+          variant="contained" 
+          color="primary" 
+          size="large"
+          onClick={() => setOpenModal(true)}
+          sx={{ borderRadius: '6px', textTransform: 'none', fontWeight: 'bold' }}
+        >
+          ➕ Nuevo Cliente
+        </Button>
+      </Box>
 
       <TextField
         label="Buscar por apellido o ciudad"
@@ -93,72 +79,59 @@ function ListaClientes() {
         onChange={e => setBusqueda(e.target.value)}
       />
 
-      {/* Estado de carga */}
+      {/* Control de estados de carga */}
       {loading && (
-        <Box>
+        <Box sx={{ mt: 3 }}>
           <CircularProgress />
-          <Skeleton variant="rectangular" width="100%" height={40} />
+          <Skeleton variant="rectangular" width="100%" height={40} sx={{ mt: 2 }} />
         </Box>
       )}
 
-      {/* Estado de error */}
-      {error && <Alert severity="error">{error}</Alert>}
+      {/* Control de estados de error */}
+      {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
 
-      {/* Estado de éxito */}
+      {/* Control de estados de éxito (Renderizado de la tabla profesional) */}
       {!loading && !error && (
-        <Table>
-          <TableHead>
+        <Table sx={{ mt: 2 }}>
+          <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
             <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Nombre Completo</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Teléfono</TableCell>
-              <TableCell>Ciudad</TableCell>
+              <TableCell style={{ fontWeight: 'bold' }}>ID</TableCell>
+              <TableCell style={{ fontWeight: 'bold' }}>Nombre Completo</TableCell>
+              <TableCell style={{ fontWeight: 'bold' }}>Email</TableCell>
+              <TableCell style={{ fontWeight: 'bold' }}>Teléfono</TableCell>
+              <TableCell style={{ fontWeight: 'bold' }}>Ciudad</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-        {clientesFiltrados.map(c => (
-            <TableRow key={c.id}>
-            <TableCell>{c.id}</TableCell>
-            <TableCell>{`${c.name?.firstname || ''} ${c.name?.lastname || ''}`}</TableCell>
-            <TableCell>{c.email || ''}</TableCell>
-            <TableCell>{c.phone || ''}</TableCell>
-            <TableCell>{c.address?.city || ''}</TableCell>
-            </TableRow>
-        ))}
-        </TableBody>
+            {clientesFiltrados.map(c => (
+              <TableRow key={c.id} hover>
+                <TableCell>{c.id}</TableCell>
+                <TableCell>{`${c.name?.firstname || ''} ${c.name?.lastname || ''}`}</TableCell>
+                <TableCell>{c.email || ''}</TableCell>
+                <TableCell>{c.phone || ''}</TableCell>
+                <TableCell>{c.address?.city || ''}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
         </Table>
       )}
 
-      {/* Formulario de alta */}
-      <Box mt={4}>
-        <Typography variant="h5">Alta de Cliente</Typography>
-        <form onSubmit={handleSubmit}>
-          <TextField label="Nombre" value={nuevoCliente.firstname}
-            onChange={e => setNuevoCliente({ ...nuevoCliente, firstname: e.target.value })}
-            fullWidth margin="normal" />
-          <TextField label="Apellido" value={nuevoCliente.lastname}
-            onChange={e => setNuevoCliente({ ...nuevoCliente, lastname: e.target.value })}
-            fullWidth margin="normal" />
-          <TextField label="Email" value={nuevoCliente.email}
-            onChange={e => setNuevoCliente({ ...nuevoCliente, email: e.target.value })}
-            fullWidth margin="normal" />
-          <TextField label="Teléfono" value={nuevoCliente.phone}
-            onChange={e => setNuevoCliente({ ...nuevoCliente, phone: e.target.value })}
-            fullWidth margin="normal" />
-          <TextField label="Ciudad" value={nuevoCliente.city}
-            onChange={e => setNuevoCliente({ ...nuevoCliente, city: e.target.value })}
-            fullWidth margin="normal" />
-          <Button type="submit" variant="contained" color="primary">Guardar</Button>
-        </form>
-      </Box>
+      {/* Conexión al componente modular flotante mediante propiedades */}
+      <FormularioCliente 
+        open={openModal} 
+        handleClose={() => setOpenModal(false)} 
+        onClienteCreado={handleAgregarClienteALista}
+        setGlobalError={setError}
+        showSnackbar={desencadenarSnackbar}
+      />
 
-      {/* Snackbar feedback */}
+      {/* Snackbar feedback global */}
       <Snackbar
         open={snackbar.open}
-        autoHideDuration={3000}
+        autoHideDuration={4000}
         onClose={() => setSnackbar({ open: false, message: '' })}
         message={snackbar.message}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       />
     </Container>
   );
