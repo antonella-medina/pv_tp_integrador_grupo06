@@ -5,7 +5,7 @@ import {
   Button, Snackbar
 } from '@mui/material';
 // Se Importo el nuevo componente modular del formulario modal
-import FormularioCliente from '../components/clientes/FormularioCliente';
+import FormularioCliente from '../components/layout/clientes/FormularioCliente';
 
 function ListaClientes() {
   const [clientes, setClientes] = useState([]);
