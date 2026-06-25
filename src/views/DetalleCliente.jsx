@@ -5,15 +5,13 @@ import { CircularProgress } from "@mui/material";
 import { Container, Typography, Box, Divider } from "@mui/material";
 import { Card, CardContent } from "@mui/material";
 const DetalleCliente = () => {
-  //const id = 4;
   const { id } = useParams();
-
   //creo variable de estado para cliente
   const [cliente, setCliente] = useState(null);
   const [error, setError] = useState(null);
-  //creo un useEffect para contener el fetch
+  //Creo un useEffect para contener el fetch
   useEffect(() => {
-    //operación asincrona
+    //operación asincrona que trae los datos del cliente desde la API
     const fetchCliente = async () => {
       try {
         const respuesta = await fetch(`https://fakestoreapi.com/users/${id}`);
@@ -22,14 +20,15 @@ const DetalleCliente = () => {
         //Cliente toma esos datos
         setCliente(data);
       } catch (error) {
+        //Guarda la descripción del error en su variable de estado
         setError(error.message);
       }
     };
     fetchCliente();
   }, []);
-  //En caso de algún error, como sin conexión o si el cliente no existe
+  //En caso de algún error, como sin conexión o si el cliente no existe(muestra el mensaje del tipo de error)
   if (error) return <div> Error: {error} </div>;
-  //En caso de que aún no lleguen los datos
+  //En caso de que aún no lleguen los datos 
   if (cliente === null) return <CircularProgress />;
   return (
     //Muestro todos los datos anidados del Cliente
