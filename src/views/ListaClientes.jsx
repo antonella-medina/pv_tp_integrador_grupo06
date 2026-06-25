@@ -5,7 +5,8 @@ import {
   Button, Snackbar
 } from '@mui/material';
 // Se Importo el nuevo componente modular del formulario modal
-import FormularioCliente from '../components/clientes/FormularioCliente';
+import FormularioCliente from '../components/layout/clientes/FormularioCliente';
+import { useNavigate } from 'react-router-dom';
 
 function ListaClientes() {
   const [clientes, setClientes] = useState([]);
@@ -13,6 +14,8 @@ function ListaClientes() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: '' });
+  //Declaración de navigate para ir a DetalleCliente 
+  const navigate = useNavigate();
   
   // Estado para controlar la apertura de la ventana emergente
   const [openModal, setOpenModal] = useState(false);
@@ -53,7 +56,7 @@ function ListaClientes() {
   return (
     <Container>
       {/* Encabezado limpio y alineado */}
-      <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mt: 4, mb: 2 }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 4, mb: 2 }}>
         <Typography variant="h4" style={{ fontWeight: 'bold' }}>
           Tabla de Clientes
         </Typography>
@@ -110,6 +113,8 @@ function ListaClientes() {
                 <TableCell>{c.email || ''}</TableCell>
                 <TableCell>{c.phone || ''}</TableCell>
                 <TableCell>{c.address?.city || ''}</TableCell>
+                {/*Botón para ir al detalle del Cliente*/}
+                <TableCell><Button onClick={()=>navigate(`/Clientes/${c.id}`)}>Ver Ficha Completa</Button></TableCell>
               </TableRow>
             ))}
           </TableBody>

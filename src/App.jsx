@@ -8,7 +8,7 @@ import Login from "./views/Login";
 import Dashboard from "./views/Dashboard";
 import Header from "./components/layout/Header";
 import ListaClientes from "./views/ListaClientes";
-
+import DetalleCliente from "./views/DetalleCliente";
 {/*este componente envuelve a las páginas privadas.Si no estás logueado, te manda una patada al /login.*/}
 const RutaProtegida = ({ children }) => {
     const { admin } = useContext(AdminContext);
@@ -34,7 +34,7 @@ function RutasDeLaApp() {
           path="/dashboard" 
           element={
             <RutaProtegida>
-              <Dashboard />
+              <Deshboard/>
             </RutaProtegida>
           } 
         />
@@ -43,6 +43,14 @@ function RutasDeLaApp() {
           element={
             <RutaProtegida>
               <ListaClientes />
+            </RutaProtegida>
+          } 
+        />
+         <Route 
+          path="/clientes/:id" 
+          element={
+            <RutaProtegida>
+              <DetalleCliente />
             </RutaProtegida>
           } 
         />
