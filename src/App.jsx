@@ -34,7 +34,7 @@ function RutasDeLaApp() {
           path="/dashboard" 
           element={
             <RutaProtegida>
-              <Deshboard/>
+              <Dashboard/>
             </RutaProtegida>
           } 
         />
