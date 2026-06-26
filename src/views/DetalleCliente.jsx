@@ -1,3 +1,7 @@
+import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { AdminContext } from "../context/AdminContext";
+import { Button } from "@mui/material";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useState } from "react";
@@ -6,6 +10,8 @@ import { Container, Typography, Box, Divider } from "@mui/material";
 import { Card, CardContent } from "@mui/material";
 const DetalleCliente = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { admin } = useContext(AdminContext);
   //creo variable de estado para cliente
   const [cliente, setCliente] = useState(null);
   const [error, setError] = useState(null);
@@ -25,11 +31,26 @@ const DetalleCliente = () => {
       }
     };
     fetchCliente();
-  }, []);
+  }, [id]);
   //En caso de algún error, como sin conexión o si el cliente no existe(muestra el mensaje del tipo de error)
   if (error) return <div> Error: {error} </div>;
   //En caso de que aún no lleguen los datos 
   if (cliente === null) return <CircularProgress />;
+  const eliminarCliente = async () => {
+    try {
+      const respuesta = await fetch(`https://fakestoreapi.com/users/${id}`, {
+        method: "DELETE",
+      });
+      if (respuesta.ok) {
+        alert("Cliente eliminado correctamente");
+        navigate("/clientes");
+      } else {
+        alert("Error al eliminar el cliente");
+      }
+    } catch (error) {
+      alert("Error al eliminar el cliente: " + error.message);
+    }
+  };
   return (
     //Muestro todos los datos anidados del Cliente
     <Container maxWidth="sm">
@@ -42,16 +63,16 @@ const DetalleCliente = () => {
             </Typography>
             <Divider />
             <Typography variant="body1" sx={{ mt: 1 }}>
-             ciudad: {cliente.address.city}
+             ciudad: {cliente?.address?.city}
             </Typography>
             <Typography variant="body1" sx={{ mt: 1 }}>
-              calle: {cliente.address.street}
+              calle: {cliente?.address?.street}
             </Typography>
             <Typography variant="body1" sx={{ mt: 1 }}>
-              numero de calle: {cliente.address.number}
+              numero de calle: {cliente?.address?.number}
             </Typography>
             <Typography variant="body1" sx={{ mt: 1 }}>
-              código postal: {cliente.address.zipcode}
+              código postal: {cliente?.address?.zipcode}
             </Typography>
             <Typography variant="h6" sx={{ mb: 1, mt: 2 }}>
               <strong>Credenciales</strong>
@@ -61,11 +82,22 @@ const DetalleCliente = () => {
               email: {cliente.email}
             </Typography>
             <Typography variant="body1" sx={{ mt: 1 }}>
-              nombre de usuario: {cliente.username}
+              nombre de usuario: {cliente?.username}
             </Typography>
             <Typography variant="body1" sx={{ mt: 1 }}>
-              contraseña: {cliente.password}
+              contraseña: {cliente?.password}
             </Typography>
+            {admin?.sector === "Gerencia" && (
+              <Button
+                variant="contained"
+                color="error"
+                sx={{ mt: 3 }}
+                onClick={eliminarCliente}
+              >
+                Eliminar Cliente
+              </Button>
+            )
+              }
           </Box>
         </CardContent>
       </Card>
