@@ -114,7 +114,7 @@ function ListaClientes() {
                 <TableCell>{c.phone || ''}</TableCell>
                 <TableCell>{c.address?.city || ''}</TableCell>
                 {/*Botón para ir al detalle del Cliente*/}
-                <TableCell><Button onClick={()=>navigate(`/Clientes/${c.id}`)}>Ver Ficha Completa</Button></TableCell>
+                <TableCell><Button onClick={()=>navigate(`/clientes/${c.id}`)}>Ver Ficha Completa</Button></TableCell>
               </TableRow>
             ))}
           </TableBody>
